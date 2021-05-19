@@ -90,7 +90,14 @@ public class Entity : MonoBehaviour , ITargetable
         {
             action.SetTarget(CombatManager.Instance.TargetedEntity);
             action.Use(this);
-            CombatManager.Instance.ChangeTurn(CombatManager.CombatState.PlayerTurn);
+            if (tag.Equals("Player"))
+            {
+                CombatManager.Instance.ChangeTurn(CombatManager.CombatState.EnemyTurn);
+            }
+            else
+            {
+                CombatManager.Instance.ChangeTurn(CombatManager.CombatState.PlayerTurn);
+            }
         }
         
     }
@@ -122,14 +129,11 @@ public class Entity : MonoBehaviour , ITargetable
     public void Update()
     {
         
-        if (Input.GetKeyDown(KeyCode.A))
+        if (Input.GetKeyDown(KeyCode.A) && tag != "Player" && CombatManager.Instance.CurrentGameState == CombatManager.CombatState.EnemyTurn)
         {
-            Debug.Log("Setting the Target");
-            bool ready = Actions[0].SetTarget(this);
-            Debug.Log(ready);
-            
-            Actions[0].Use(this);
-            
+            CombatManager.Instance.TargetedEntity = (GameObject.FindGameObjectWithTag("Player").GetComponent<Entity>());
+            SelectedAction = Actions[0];
+            UseAction(SelectedAction);
         }
     }
 
